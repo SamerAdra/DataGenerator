@@ -30,11 +30,13 @@ import scala.util.Random
 object RandomHelper {
   /**
    * Implicit methods for a random generator
+   *
    * @param random Random number generator
    */
   implicit class RandomExtensions(val random: Random) extends AnyVal {
     /**
      * Get next long between 0 (inclusive) and max (exclusive)
+     *
      * @return Long >= 0 and < max
      * @param maxSizeExclusive Max number (exclusive)
      */
@@ -51,6 +53,7 @@ object RandomHelper {
     /**
      * Get the next Long with specified minimum size (inclusive)
      * and specified maximum size (exclusive).
+     *
      * @param minSizeInclusive Min size (inclusive), >= 0
      * @param maxSizeExclusive Max size (exclusive)
      * @return Random long in range [min, max)
@@ -67,6 +70,7 @@ object RandomHelper {
 
     /**
      * Generate a random alphabetic string from allowable characters
+     *
      * @param length Length of string to generate; acts as max length if minLength is also specified
      * @param minLengthMaybe If specified, then length is randomized between minLength and length
      * @return Random string containing only alphabetic characters
@@ -76,6 +80,7 @@ object RandomHelper {
     }
     /**
      * Generate a random alphanumeric string from allowable characters
+     *
      * @param length Length of string to generate; acts as max length if minLength is also specified
      * @param minLengthMaybe If specified, then length is randomized between minLength and length
      * @return Random string containing only alphanumeric characters
@@ -85,6 +90,7 @@ object RandomHelper {
     }
     /**
      * Generate a random hexadecimal string from allowable characters
+     *
      * @param length Length of string to generate; acts as max length if minLength is also specified
      * @param minLengthMaybe If specified, then length is randomized between minLength and length
      * @return Random hexadecimal string (lowercase)
@@ -95,6 +101,7 @@ object RandomHelper {
 
     /**
      * Get random string of maximum length including allowable characters 8, 9, a, and b
+     *
      * @return Random hex char from 8 to b (lowercase)
      */
     def randomHexCharFrom8ToB: Char = {
@@ -104,6 +111,7 @@ object RandomHelper {
 
     /**
      * Get a random int between two numbers, inclusive
+     *
      * @param min Minimum, inclusive
      * @param max Maximum, inclusive
      * @return Random int in range
@@ -114,6 +122,7 @@ object RandomHelper {
 
     /**
      * Generate a random string from allowable characters
+     *
      * @param length Length of string to generate; acts as max length if minLength is also specified
      * @param chars Allowable characters
      * @param minLengthMaybe If specified, then length is randomized between minLength and length
@@ -142,6 +151,7 @@ object RandomHelper {
 
     /**
      * Returns true (percentage * 100)% of the time, else false
+     *
      * @param percentage A number between 0 and 1.0 (or else, if below 0 it will always evaluate false, and >= 1 will always evaluate true)
      * @return Whether or not probability passed
      */
@@ -151,6 +161,7 @@ object RandomHelper {
 
     /**
      * Same behavior as java.util.UUID.randomUUID().
+     *
      * @return Random UUID
      */
     def randomUuid: String = {
@@ -173,13 +184,14 @@ object RandomHelper {
 
   /**
    * Given a unique value, combines it with configurable random seeds and creates randomizers for this thread.
+   *
    * @param uniqueValue A long limited to 48 unsigned bits (method will fail if greater)
    * @param randomSeedMaybe Random seed for non-globally unique values (typical use case, this seed should be same across runs)
    * @param globalRandomSeedBaseMaybe Random seed for non-globally unique values (typical use case, this seed should be same across runs)
    * @return 2-Tuple of randomizers for this thread
    */
   def setUpRandomSeedsForCurrentThreadBasedOnUniqueValue(uniqueValue: Long, randomSeedMaybe: Option[Long] = None
-        , globalRandomSeedBaseMaybe: Option[Short] = None): (Random, Random) = {
+        , globalRandomSeedBaseMaybe: Option[Short] = None, printDebugMessage: Boolean = false): (Random, Random) = {
     val currentThread = Thread.currentThread()
     val localRandomSeed = if (randomSeedMaybe.nonEmpty) randomSeedMaybe.get else randomSeedRandomizer.nextLong()
     val localGlobalRandomSeedBase = if (globalRandomSeedBaseMaybe.nonEmpty) globalRandomSeedBaseMaybe.get else randomSeedBaseForGloballyUniqueIds
@@ -188,8 +200,11 @@ object RandomHelper {
     threadToRandomSeedsMap +=
       ((currentThread,
       seedAndGlobalSeed))
-    println(s"Setting up random seeds for thread ${currentThread.getId // scalastyle:ignore
+    if (printDebugMessage) {
+      println(s"Setting up random seeds for thread ${
+        currentThread.getId // scalastyle:ignore
       }: Seed is ${localRandomSeed}. Initial random val is ${seedAndGlobalSeed._1.nextInt()}.")
+    }
     seedAndGlobalSeed
   }
 
@@ -204,6 +219,7 @@ object RandomHelper {
 
   /**
    * Get the configured-seed randomizer for the current thread.
+   *
    * @return Randomizer for values that are not intended to be globally unique (e.g., across multiple application runs)
    */
   def randWithConfiguredSeed: Random = {
@@ -218,6 +234,7 @@ object RandomHelper {
 
   /**
    * Get the configured-seed globally unique randomizer for the current thread.
+   *
    * @return Randomizer for values that are intended to be globally unique (e.g., across multiple application runs)
    */
   def randForGloballyUniqueIds: Random = {
@@ -232,6 +249,7 @@ object RandomHelper {
 
   /**
    * Gets the specified randomizer
+   *
    * @param isGloballyRandom Whether or not to get the globally unique randomizer
    * @return Randomizer
    */
@@ -245,6 +263,7 @@ object RandomHelper {
 
   /**
    * Generate a random alphabetic string from allowable characters
+   *
    * @param length Length of string to generate; acts as max length if minLength is also specified
    * @param isGloballyRandom Whether or not to use global randomizer
    * @param minLengthMaybe If specified, then length is randomized between minLength and length
@@ -255,6 +274,7 @@ object RandomHelper {
   }
   /**
    * Generate a random alphanumeric string from allowable characters
+   *
    * @param length Length of string to generate; acts as max length if minLength is also specified
    * @param isGloballyRandom Whether or not to use global randomizer
    * @param minLengthMaybe If specified, then length is randomized between minLength and length
@@ -265,6 +285,7 @@ object RandomHelper {
   }
   /**
    * Generate a random hexadecimal string from allowable characters
+   *
    * @param length Length of string to generate; acts as max length if minLength is also specified
    * @param isGloballyRandom Whether or not to use global randomizer
    * @param minLengthMaybe If specified, then length is randomized between minLength and length
@@ -276,6 +297,7 @@ object RandomHelper {
 
   /**
    * Get random string of maximum length including allowable characters 8, 9, a, and b
+   *
    * @param isGloballyRandom Whether or not to use randomizer for globally unique values
    * @return Random hex char from 8 to b (lowercase)
    */
@@ -285,6 +307,7 @@ object RandomHelper {
 
   /**
    * Get a random int between two numbers, inclusive
+   *
    * @param min Minimum, inclusive
    * @param max Maximum, inclusive
    * @param isGloballyRandom Whether or not to use randomizer for globally unique values
@@ -296,6 +319,7 @@ object RandomHelper {
 
   /**
    * Generate a random string from allowable characters
+   *
    * @param length Length of string to generate; acts as max length if minLength is also specified
    * @param chars Allowable characters
    * @param isGloballyRandom Whether or not to use global randomizer
@@ -308,6 +332,7 @@ object RandomHelper {
 
   /**
    * Returns true (percentage * 100)% of the time, else false
+   *
    * @param percentage A number between 0 and 1.0 (or else, if below 0 it will always evaluate false, and >= 1 will always evaluate true)
    * @return Whether or not probability passed
    */
@@ -317,6 +342,7 @@ object RandomHelper {
 
   /**
    * Get the next Long from the configured-seed randomizer for the current thread, with specified maximum size (exclusive).
+   *
    * @param maxSizeExclusive Max size (exclusive)
    * @return Random long in range [0, maxsize)
    */
@@ -327,6 +353,7 @@ object RandomHelper {
   /**
    * Get the next Long from the configured-seed randomizer for the current thread, with specified minimum size (inclusive)
    * and specified maximum size (exclusive).
+   *
    * @param minSizeInclusive Min size (inclusive), >= 0
    * @param maxSizeExclusive Max size (exclusive)
    * @return Random long in range [min, max)
@@ -337,6 +364,7 @@ object RandomHelper {
 
   /**
    * Same behavior as java.util.UUID.randomUUID() except uses a random generator with configurable seed.
+   *
    * @param isGloballyRandom Whether or not to use the globally random seeded genernator or the regular one
    * @return Random UUID
    */
@@ -352,6 +380,7 @@ object RandomHelper {
   /**
    * Get the next integer from a gamma distribution of the specified shape and scale, with optional random seed.
    * Not yet thread-aware because so far we have only needed to use this from the main thread.
+   *
    * @param gammaDistShape Gamma distribution shape
    * @param gammaDistScale Gamma distribution scala
    * @param randomSeedOption A random seed to use, or None (default)
