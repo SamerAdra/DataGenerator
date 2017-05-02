@@ -34,7 +34,7 @@ public final class ScalaInJavaHelper {
      * @return Scala Iterable
      */
     public static scala.collection.Iterable linkedListToScalaIterable(LinkedList<?> linkedList) {
-        return JavaConverters.asScalaIterableConverter(linkedList).asScala();
+        return JavaConverters.collectionAsScalaIterableConverter(linkedList).asScala();
     }
 
     /**
